@@ -45,13 +45,23 @@ export default function TodoList() {
     setAdding(true)
     const { data: { user } } = await supabase.auth.getUser()
 
+    if (!user) {
+      console.error('No user found')
+      setAdding(false)
+      return
+    }
+
     const { error } = await supabase
       .from('todos')
-      .insert({ task, user_id: user!.id })
+      .insert({ task, user_id: user.id })
 
-    if (!error) {
+    if (error) {
+      console.error('Error inserting todo:', error)
+      alert(`Error: ${error.message}`)
+    } else {
       setNewTask('')
       inputRef.current?.focus()
+      fetchTodos()
     }
     setAdding(false)
   }
@@ -61,10 +71,12 @@ export default function TodoList() {
       .from('todos')
       .update({ done: !todo.done })
       .eq('id', todo.id)
+    fetchTodos()
   }
 
   const deleteTodo = async (id: string) => {
     await supabase.from('todos').delete().eq('id', id)
+    fetchTodos()
   }
 
   const pending = todos.filter(t => !t.done)
