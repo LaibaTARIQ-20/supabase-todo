@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
-export default function AuthForm() {
+export default function AuthForm({ mode }: { mode: 'signin' | 'signup' }) {
   const router = useRouter()
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -105,12 +105,12 @@ export default function AuthForm() {
       {/* Toggle mode */}
       <p className="text-center text-sm text-stone-400 mt-5">
         {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
-        <button
-          onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(null); setMessage(null) }}
+        <Link
+          href={mode === 'signin' ? '/register' : '/login'}
           className="text-stone-700 font-medium hover:underline"
         >
           {mode === 'signin' ? 'Sign up' : 'Sign in'}
-        </button>
+        </Link>
       </p>
     </div>
   )
